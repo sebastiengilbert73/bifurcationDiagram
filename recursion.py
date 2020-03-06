@@ -61,6 +61,28 @@ class RickerModel(RecursiveFunction):
         xyValues = list(zip(xValues, yValues))
         return xyValues
 
+class Triangle(RecursiveFunction):
+    def __init__(self, center, height):
+        super(Triangle, self).__init__()
+
+        self.center = center
+        self.height = height
+
+    def NextValue(self, precedingValuesList):
+        x = precedingValuesList[-1]
+        y = 0
+        if x <= self.center:
+            y = self.height * x/self.center
+        else:
+            y = self.height * (1.0 - (x - self.center)/(1.0 - self.center))
+        return y
+
+    def NextValueRule(self, numberOfSamples):
+        xValues = numpy.linspace(0.0, 1.0, numberOfSamples)
+        yValues = [self.NextValue([x]) for x in xValues]
+        xyValues = list(zip(xValues, yValues))
+        return xyValues
+
 
 
 if __name__ == '__main__':
@@ -80,4 +102,8 @@ if __name__ == '__main__':
 
     rickerModel = RickerModel(1.3, 20)
     nextValueRule = rickerModel.NextValueRule(1, 40, 21)
+    #print ("nextValueRule = {}".format(nextValueRule))
+
+    triangle = Triangle(0.3, 1.0)
+    nextValueRule = triangle.NextValueRule(21)
     print ("nextValueRule = {}".format(nextValueRule))
